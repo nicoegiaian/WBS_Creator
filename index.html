@@ -303,6 +303,40 @@ select.fi {
   text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
 }
 
+/* ── APPEARANCE MODAL TABS ── */
+.ap-tabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+.ap-tab {
+  padding: 8px 18px; font-size: 13px; font-weight: 600;
+  color: var(--text-muted); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: all .13s;
+  background: transparent; border-top: none; border-left: none; border-right: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.ap-tab:hover { color: var(--text); }
+.ap-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.ap-panel { display: none; }
+.ap-panel.on { display: block; }
+
+/* ── NODE STYLE SECTIONS ── */
+.ns-section { margin-bottom: 20px; }
+.ns-section:last-child { margin-bottom: 0; }
+.ns-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ns-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.ns-field { display: flex; flex-direction: column; gap: 4px; }
+.ns-label { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-muted); }
+.ns-color-wrap { display: flex; align-items: center; gap: 8px; }
+.ns-color-wrap input[type="color"] {
+  width: 36px; height: 30px; border: 1px solid var(--border);
+  border-radius: 6px; background: var(--surface2); cursor: pointer; padding: 2px; flex-shrink: 0;
+}
+.ns-color-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+.ns-range-wrap { display: flex; align-items: center; gap: 8px; }
+.ns-range-wrap input[type="range"] { flex: 1; accent-color: var(--accent); }
+.ns-range-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); min-width: 28px; text-align: right; }
 /* ── BG MODAL ── */
 .type-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
 .type-btn {
@@ -471,67 +505,149 @@ select.fi {
   <div class="drawer-body" id="dBody"></div>
 </div>
 
-<!-- ── BG MODAL ── -->
+<!-- ── APPEARANCE MODAL ── -->
 <div class="modal-overlay" id="bgModal">
   <div class="modal modal-sm">
     <h2>🎨 Apariencia</h2>
-    <div class="sec-title">Tipo de fondo</div>
-    <div class="type-row">
-      <button class="type-btn on" data-t="solid"    onclick="setBgType('solid')">Color sólido</button>
-      <button class="type-btn"    data-t="gradient" onclick="setBgType('gradient')">Gradiente</button>
-      <button class="type-btn"    data-t="image"    onclick="setBgType('image')">Imagen URL</button>
-      <button class="type-btn"    data-t="pattern"  onclick="setBgType('pattern')">Patrón</button>
+
+    <!-- Modal tabs -->
+    <div class="ap-tabs">
+      <button class="ap-tab active" id="apTab-fondo"  onclick="setApTab('fondo')">Fondo</button>
+      <button class="ap-tab"        id="apTab-nodos"  onclick="setApTab('nodos')">Nodos</button>
     </div>
 
-    <div class="bg-panel on" id="panel-solid">
-      <div class="frow">
-        <label>Color de fondo</label>
-        <div class="crow">
-          <input type="color" id="b-color" value="#0f1117" oninput="previewBg()">
-          <span>Seleccioná el color</span>
+    <!-- ══ PANEL: FONDO ══ -->
+    <div class="ap-panel on" id="apPanel-fondo">
+      <div class="sec-title">Tipo de fondo</div>
+      <div class="type-row">
+        <button class="type-btn on" data-t="solid"    onclick="setBgType('solid')">Color sólido</button>
+        <button class="type-btn"    data-t="gradient" onclick="setBgType('gradient')">Gradiente</button>
+        <button class="type-btn"    data-t="image"    onclick="setBgType('image')">Imagen URL</button>
+        <button class="type-btn"    data-t="pattern"  onclick="setBgType('pattern')">Patrón</button>
+      </div>
+
+      <div class="bg-panel on" id="panel-solid">
+        <div class="frow">
+          <label>Color de fondo</label>
+          <div class="crow">
+            <input type="color" id="b-color" value="#0f1117" oninput="previewBg()">
+            <span>Seleccioná el color</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="bg-panel" id="panel-gradient">
-      <div class="frow"><label>Color inicial</label><input type="color" id="b-gfrom" value="#0f1117" oninput="previewBg()"></div>
-      <div class="frow"><label>Color final</label><input type="color" id="b-gto" value="#1a2a4a" oninput="previewBg()"></div>
-      <div class="frow">
-        <label>Dirección</label>
-        <select id="b-gdir" class="mi" onchange="previewBg()">
-          <option value="to bottom right">Diagonal ↘</option>
-          <option value="to bottom">Vertical ↓</option>
-          <option value="to right">Horizontal →</option>
-          <option value="to top right">Diagonal ↗</option>
-          <option value="radial">Radial</option>
-        </select>
+      <div class="bg-panel" id="panel-gradient">
+        <div class="frow"><label>Color inicial</label><input type="color" id="b-gfrom" value="#0f1117" oninput="previewBg()"></div>
+        <div class="frow"><label>Color final</label><input type="color" id="b-gto" value="#1a2a4a" oninput="previewBg()"></div>
+        <div class="frow">
+          <label>Dirección</label>
+          <select id="b-gdir" class="mi" onchange="previewBg()">
+            <option value="to bottom right">Diagonal ↘</option>
+            <option value="to bottom">Vertical ↓</option>
+            <option value="to right">Horizontal →</option>
+            <option value="to top right">Diagonal ↗</option>
+            <option value="radial">Radial</option>
+          </select>
+        </div>
       </div>
-    </div>
 
-    <div class="bg-panel" id="panel-image">
-      <div class="frow"><label>URL de imagen</label><input type="text" id="b-iurl" class="mi" placeholder="https://..." oninput="previewBg()"></div>
-      <div class="frow"><label>Color overlay</label><input type="color" id="b-iover" value="#0f1117" oninput="previewBg()"></div>
-      <div class="frow">
-        <label>Opacidad overlay (<span id="b-iopv">70</span>%)</label>
-        <input type="range" id="b-iop" min="0" max="100" value="70" oninput="document.getElementById('b-iopv').textContent=this.value;previewBg()">
+      <div class="bg-panel" id="panel-image">
+        <div class="frow"><label>URL de imagen</label><input type="text" id="b-iurl" class="mi" placeholder="https://..." oninput="previewBg()"></div>
+        <div class="frow"><label>Color overlay</label><input type="color" id="b-iover" value="#0f1117" oninput="previewBg()"></div>
+        <div class="frow">
+          <label>Opacidad overlay (<span id="b-iopv">70</span>%)</label>
+          <input type="range" id="b-iop" min="0" max="100" value="70" oninput="document.getElementById('b-iopv').textContent=this.value;previewBg()">
+        </div>
       </div>
-    </div>
 
-    <div class="bg-panel" id="panel-pattern">
-      <div class="frow">
-        <label>Patrón</label>
-        <div class="pat-grid" id="patGrid"></div>
+      <div class="bg-panel" id="panel-pattern">
+        <div class="frow">
+          <label>Patrón</label>
+          <div class="pat-grid" id="patGrid"></div>
+        </div>
+        <div class="frow"><label>Color del patrón</label><input type="color" id="b-pcol" value="#2a3047" oninput="previewBg()"></div>
+        <div class="frow"><label>Color base</label><input type="color" id="b-pbg" value="#0f1117" oninput="previewBg()"></div>
+        <div class="frow">
+          <label>Opacidad (<span id="b-popv">40</span>%)</label>
+          <input type="range" id="b-pop" min="5" max="100" value="40" oninput="document.getElementById('b-popv').textContent=this.value;previewBg()">
+        </div>
       </div>
-      <div class="frow"><label>Color del patrón</label><input type="color" id="b-pcol" value="#2a3047" oninput="previewBg()"></div>
-      <div class="frow"><label>Color base</label><input type="color" id="b-pbg" value="#0f1117" oninput="previewBg()"></div>
-      <div class="frow">
-        <label>Opacidad (<span id="b-popv">40</span>%)</label>
-        <input type="range" id="b-pop" min="5" max="100" value="40" oninput="document.getElementById('b-popv').textContent=this.value;previewBg()">
+    </div><!-- /apPanel-fondo -->
+
+    <!-- ══ PANEL: NODOS ══ -->
+    <div class="ap-panel" id="apPanel-nodos">
+
+      <div class="ns-section">
+        <div class="sec-title">Fondo de las cajas</div>
+        <div class="ns-grid-2">
+          <div class="ns-field">
+            <span class="ns-label">Color de fondo</span>
+            <div class="ns-color-wrap">
+              <input type="color" id="ns-card-bg" value="#181c27" oninput="previewNodes()">
+              <span class="ns-color-val" id="ns-card-bg-v">#181c27</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <div class="ns-section">
+        <div class="sec-title">Colores de borde</div>
+        <div class="ns-grid-2">
+          <div class="ns-field">
+            <span class="ns-label">Borde normal</span>
+            <div class="ns-color-wrap">
+              <input type="color" id="ns-border" value="#2a3047" oninput="previewNodes()">
+              <span class="ns-color-val" id="ns-border-v">#2a3047</span>
+            </div>
+          </div>
+          <div class="ns-field">
+            <span class="ns-label">Borde raíz</span>
+            <div class="ns-color-wrap">
+              <input type="color" id="ns-border-root" value="#4f7cff" oninput="previewNodes()">
+              <span class="ns-color-val" id="ns-border-root-v">#4f7cff</span>
+            </div>
+          </div>
+          <div class="ns-field">
+            <span class="ns-label">Borde activo</span>
+            <div class="ns-color-wrap">
+              <input type="color" id="ns-border-active" value="#4f7cff" oninput="previewNodes()">
+              <span class="ns-color-val" id="ns-border-active-v">#4f7cff</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ns-section">
+        <div class="sec-title">Colores de letra</div>
+        <div class="ns-grid-2">
+          <div class="ns-field">
+            <span class="ns-label">Nombre / texto</span>
+            <div class="ns-color-wrap">
+              <input type="color" id="ns-text" value="#e8eaf0" oninput="previewNodes()">
+              <span class="ns-color-val" id="ns-text-v">#e8eaf0</span>
+            </div>
+          </div>
+          <div class="ns-field">
+            <span class="ns-label">Código WBS</span>
+            <div class="ns-color-wrap">
+              <input type="color" id="ns-code-color" value="#4f7cff" oninput="previewNodes()">
+              <span class="ns-color-val" id="ns-code-color-v">#4f7cff</span>
+            </div>
+          </div>
+          <div class="ns-field">
+            <span class="ns-label">Labels (Inicio/Fin)</span>
+            <div class="ns-color-wrap">
+              <input type="color" id="ns-text-muted" value="#6b7595" oninput="previewNodes()">
+              <span class="ns-color-val" id="ns-text-muted-v">#6b7595</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /apPanel-nodos -->
 
     <div class="modal-actions">
-      <button class="btn" onclick="resetBg()">Restablecer</button>
+      <button class="btn" onclick="resetAppearance()">Restablecer</button>
       <button class="btn" onclick="closeBgModal()">Cancelar</button>
       <button class="btn primary" onclick="applyAndSaveBg()">Aplicar</button>
     </div>
@@ -590,8 +706,19 @@ select.fi {
 //  DEFAULTS
 // ══════════════════════════════════════════════════
 const LS_BG = 'wbs-bg-v1';
+const LS_NS = 'wbs-ns-v1';
 
 const mkDefaultBg = () => ({ type: 'solid', color: '#0f1117' });
+
+const mkDefaultNodeStyle = () => ({
+  cardBg:       '#181c27',
+  border:       '#2a3047',
+  borderRoot:   '#4f7cff',
+  borderActive: '#4f7cff',
+  text:         '#e8eaf0',
+  codeColor:    '#4f7cff',
+  textMuted:    '#6b7595',
+});
 
 const mkDefaultSchema = () => ({
   tabs: [
@@ -618,11 +745,13 @@ const mkDefaultSchema = () => ({
 let tree        = null;
 let idCounter   = 0;
 let bgConfig    = mkDefaultBg();
+let nodeStyle   = mkDefaultNodeStyle();
 let fieldSchema = mkDefaultSchema();
 let drawerNodeId   = null;
 let drawerTab      = null;
 let bgType         = 'solid';
 let selPattern     = 'dots';
+let curApTab       = 'fondo';
 
 // ══════════════════════════════════════════════════
 //  BACKGROUND
@@ -690,12 +819,42 @@ function loadBgLS()  {
   try { const v = localStorage.getItem(LS_BG); if (v) bgConfig = JSON.parse(v); } catch(e){}
 }
 
+function saveNsLS() { localStorage.setItem(LS_NS, JSON.stringify(nodeStyle)); }
+function loadNsLS() {
+  try { const v = localStorage.getItem(LS_NS); if (v) nodeStyle = { ...mkDefaultNodeStyle(), ...JSON.parse(v) }; } catch(e) {}
+}
+
+function applyNodeStyle(ns) {
+  ns = ns || nodeStyle;
+  let st = document.getElementById('ns-dynamic');
+  if (!st) { st = document.createElement('style'); st.id = 'ns-dynamic'; document.head.appendChild(st); }
+  st.textContent = `
+    .node-card               { background: ${ns.cardBg}; border-color: ${ns.border}; }
+    .node-card.root-card     { border-color: ${ns.borderRoot}; box-shadow: 0 0 0 1px ${ns.borderRoot}44, var(--shadow); }
+    .node-card.active-card   { border-color: ${ns.borderActive}; box-shadow: 0 0 0 3px ${ns.borderActive}33, var(--shadow-lg); }
+    .node-name               { color: ${ns.text}; }
+    .node-code span          { color: ${ns.codeColor}; }
+    .root-card .node-code span { color: ${ns.codeColor}; }
+    .date-label              { color: ${ns.textMuted}; }
+  `;
+}
+
+// ── APPEARANCE MODAL TABS ──
+function setApTab(tab) {
+  curApTab = tab;
+  document.querySelectorAll('.ap-tab').forEach(b => b.classList.toggle('active', b.id === 'apTab-' + tab));
+  document.querySelectorAll('.ap-panel').forEach(p => p.classList.toggle('on', p.id === 'apPanel-' + tab));
+  if (tab === 'nodos') syncNsUI();
+}
+
 // ── BG MODAL ──
 function openBgModal() {
+  curApTab   = 'fondo';
   bgType     = bgConfig.type || 'solid';
   selPattern = bgConfig.pid  || 'dots';
   buildPatThumbs();
   syncBgUI();
+  setApTab('fondo');
   document.getElementById('bgModal').classList.add('open');
 }
 function closeBgModal() { document.getElementById('bgModal').classList.remove('open'); }
@@ -739,8 +898,63 @@ function collectBg() {
 }
 
 function previewBg()      { applyBg(collectBg()); }
-function applyAndSaveBg() { bgConfig = collectBg(); applyBg(); saveBgLS(); closeBgModal(); showToast('✓ Apariencia guardada'); }
+function applyAndSaveBg() {
+  bgConfig   = collectBg();
+  nodeStyle  = collectNs();
+  applyBg(); saveBgLS();
+  applyNodeStyle(); saveNsLS();
+  closeBgModal();
+  showToast('✓ Apariencia guardada');
+}
 function resetBg()        { bgConfig = mkDefaultBg(); bgType = 'solid'; syncBgUI(); applyBg(); }
+function resetAppearance() {
+  if (curApTab === 'fondo') { resetBg(); }
+  else { nodeStyle = mkDefaultNodeStyle(); syncNsUI(); applyNodeStyle(); }
+}
+
+// ── NODOS UI ──
+function syncNsUI() {
+  const ns = nodeStyle;
+  const sv = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+  const st = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  sv('ns-card-bg',      ns.cardBg);      st('ns-card-bg-v',      ns.cardBg);
+  sv('ns-border',       ns.border);      st('ns-border-v',       ns.border);
+  sv('ns-border-root',  ns.borderRoot);  st('ns-border-root-v',  ns.borderRoot);
+  sv('ns-border-active',ns.borderActive);st('ns-border-active-v',ns.borderActive);
+  sv('ns-text',         ns.text);        st('ns-text-v',         ns.text);
+  sv('ns-code-color',   ns.codeColor);   st('ns-code-color-v',   ns.codeColor);
+  sv('ns-text-muted',   ns.textMuted);   st('ns-text-muted-v',   ns.textMuted);
+}
+
+function collectNs() {
+  const g = id => document.getElementById(id)?.value || '';
+  return {
+    cardBg:       g('ns-card-bg'),
+    border:       g('ns-border'),
+    borderRoot:   g('ns-border-root'),
+    borderActive: g('ns-border-active'),
+    text:         g('ns-text'),
+    codeColor:    g('ns-code-color'),
+    textMuted:    g('ns-text-muted'),
+  };
+}
+
+function previewNodes() {
+  // update hex labels
+  const updC = (colorId, labelId) => {
+    const el = document.getElementById(colorId);
+    const lb = document.getElementById(labelId);
+    if (el && lb) lb.textContent = el.value;
+  };
+  updC('ns-card-bg',      'ns-card-bg-v');
+  updC('ns-border',       'ns-border-v');
+  updC('ns-border-root',  'ns-border-root-v');
+  updC('ns-border-active','ns-border-active-v');
+  updC('ns-text',         'ns-text-v');
+  updC('ns-code-color',   'ns-code-color-v');
+  updC('ns-text-muted',   'ns-text-muted-v');
+  applyNodeStyle(collectNs());
+}
 
 function buildPatThumbs() {
   const grid = document.getElementById('patGrid');
@@ -1072,6 +1286,7 @@ function buildNode(node, isRoot) {
 function buildCard(node, isRoot) {
   const card = document.createElement('div');
   card.className = 'node-card' + (isRoot ? ' root-card' : '');
+  card.dataset.level = node.level;
 
   // Open drawer on card click (not on inputs)
   card.onclick = (e) => {
@@ -1134,7 +1349,7 @@ function buildCard(node, isRoot) {
 // ══════════════════════════════════════════════════
 function saveFile() {
   if (!tree) return;
-  const data = JSON.stringify({ version: 2, tree, idCounter, bgConfig, fieldSchema }, null, 2);
+  const data = JSON.stringify({ version: 2, tree, idCounter, bgConfig, nodeStyle, fieldSchema }, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a'); a.href = url;
@@ -1154,9 +1369,11 @@ function loadFile(e) {
       tree        = data.tree;
       idCounter   = data.idCounter || 9999;
       bgConfig    = data.bgConfig    || mkDefaultBg();
+      nodeStyle   = data.nodeStyle   ? { ...mkDefaultNodeStyle(), ...data.nodeStyle } : mkDefaultNodeStyle();
       fieldSchema = data.fieldSchema || mkDefaultSchema();
       recalc(tree, 1, 1);
       applyBg(); saveBgLS();
+      applyNodeStyle(); saveNsLS();
       render();
       showToast('✓ Proyecto cargado: ' + tree.name);
     } catch { showToast('✗ Error al leer el archivo'); }
@@ -1168,6 +1385,8 @@ function loadFile(e) {
 function newProject() {
   if (tree && !confirm('¿Crear nuevo proyecto? Se perderán los cambios no guardados.')) return;
   closeDrawer();
+  nodeStyle = mkDefaultNodeStyle();
+  applyNodeStyle();
   initProject(); recalc(tree, 1, 1); render();
   setTimeout(() => focusNode(tree.id), 50);
 }
@@ -1222,6 +1441,8 @@ function showToast(msg) {
 // ══════════════════════════════════════════════════
 loadBgLS();
 applyBg();
+loadNsLS();
+applyNodeStyle();
 initProject(); recalc(tree, 1, 1); render();
 setTimeout(() => focusNode(tree.id), 80);
 </script>

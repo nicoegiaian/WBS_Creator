@@ -1185,6 +1185,7 @@ function recalc(node, parentCode, idx) {
     node.code  = `${parentCode}.${idx}`;
     node.level = node.code.split('.').length;
   }
+  node.outlineLevel = node.level;
   node.children.forEach((c, i) => recalc(c, node.code, i + 1));
 }
 
@@ -1410,10 +1411,10 @@ function exportCSV() {
 
   // Base columns + all fieldSchema fields
   const extraCols = fieldSchema.fields.map(f => ({ id: f.id, label: f.label }));
-  const header = ['WBS_Code','Name','Start_Date','End_Date', ...extraCols.map(c => c.label)].join(',');
+  const header = ['WBS_Code','Outline_Level','Name','Start_Date','End_Date', ...extraCols.map(c => c.label)].join(',');
 
   const csvRows = rows.map(n => {
-    const base = [n.code, `"${(n.name||'').replace(/"/g,'""')}"`, n.startDate||'', n.endDate||''];
+    const base = [n.code, n.outlineLevel, `"${(n.name||'').replace(/"/g,'""')}"`, n.startDate||'', n.endDate||''];
     const extra = extraCols.map(c => {
       const v = (n.metadata && n.metadata[c.id]) || '';
       return `"${v.toString().replace(/"/g,'""')}"`;

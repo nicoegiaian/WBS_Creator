@@ -1169,7 +1169,7 @@ function refreshMetaDot(nodeId) {
 //  DATA MODEL
 // ══════════════════════════════════════════════════
 function mkNode(name, level, idx) {
-  return { id: ++idCounter, name: name || 'Nueva tarea', code: `${level}.${idx}`, startDate: '', endDate: '', metadata: {}, children: [], level };
+  return { id: ++idCounter, name: name || 'Nueva tarea', code: '', startDate: '', endDate: '', metadata: {}, children: [], level };
 }
 
 function initProject() {
@@ -1177,10 +1177,15 @@ function initProject() {
   tree = { id: ++idCounter, name: 'Mi Proyecto', code: '1.1', startDate: '', endDate: '', metadata: {}, children: [], level: 1, isRoot: true };
 }
 
-function recalc(node, level, idx) {
-  node.code  = node.isRoot ? '1.1' : `${level}.${idx}`;
-  node.level = node.isRoot ? 1 : level;
-  node.children.forEach((c, i) => recalc(c, level + 1, i + 1));
+function recalc(node, parentCode, idx) {
+  if (node.isRoot) {
+    node.code  = '1';
+    node.level = 1;
+  } else {
+    node.code  = `${parentCode}.${idx}`;
+    node.level = node.code.split('.').length;
+  }
+  node.children.forEach((c, i) => recalc(c, node.code, i + 1));
 }
 
 function findById(node, id) {
@@ -1200,7 +1205,7 @@ function findParent(node, id) {
 function addChild(parentId) {
   const p = findById(tree, parentId); if (!p) return;
   const n = mkNode('Nueva tarea', p.level + 1, p.children.length + 1);
-  p.children.push(n); recalc(tree, 1, 1); render();
+  p.children.push(n); recalc(tree, null, 1); render();
   setTimeout(() => focusNode(n.id), 40);
 }
 
@@ -1210,7 +1215,7 @@ function addSibling(nodeId, dir) {
   const { parent, idx } = res;
   const at = dir === 'left' ? idx : idx + 1;
   const n  = mkNode('Nueva tarea', parent.level + 1, at + 1);
-  parent.children.splice(at, 0, n); recalc(tree, 1, 1); render();
+  parent.children.splice(at, 0, n); recalc(tree, null, 1); render();
   setTimeout(() => focusNode(n.id), 40);
 }
 
@@ -1218,7 +1223,7 @@ function deleteNode(nodeId) {
   if (nodeId === tree.id) return;
   if (drawerNodeId === nodeId) closeDrawer();
   const res = findParent(tree, nodeId); if (!res) return;
-  res.parent.children.splice(res.idx, 1); recalc(tree, 1, 1); render();
+  res.parent.children.splice(res.idx, 1); recalc(tree, null, 1); render();
 }
 
 function updateField(nodeId, field, val) {
@@ -1371,7 +1376,7 @@ function loadFile(e) {
       bgConfig    = data.bgConfig    || mkDefaultBg();
       nodeStyle   = data.nodeStyle   ? { ...mkDefaultNodeStyle(), ...data.nodeStyle } : mkDefaultNodeStyle();
       fieldSchema = data.fieldSchema || mkDefaultSchema();
-      recalc(tree, 1, 1);
+      recalc(tree, null, 1);
       applyBg(); saveBgLS();
       applyNodeStyle(); saveNsLS();
       render();
@@ -1387,7 +1392,7 @@ function newProject() {
   closeDrawer();
   nodeStyle = mkDefaultNodeStyle();
   applyNodeStyle();
-  initProject(); recalc(tree, 1, 1); render();
+  initProject(); recalc(tree, null, 1); render();
   setTimeout(() => focusNode(tree.id), 50);
 }
 
@@ -1443,7 +1448,7 @@ loadBgLS();
 applyBg();
 loadNsLS();
 applyNodeStyle();
-initProject(); recalc(tree, 1, 1); render();
+initProject(); recalc(tree, null, 1); render();
 setTimeout(() => focusNode(tree.id), 80);
 </script>
 </body>
